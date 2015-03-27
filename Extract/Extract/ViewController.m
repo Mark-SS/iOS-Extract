@@ -12,8 +12,6 @@
 @interface ViewController ()
 
 @property (strong, nonatomic) NSString *temDir;
-@property (weak) IBOutlet NSTextField *percentLabel;
-@property (unsafe_unretained) IBOutlet NSTextView *precentTextView;
 
 @end
 
