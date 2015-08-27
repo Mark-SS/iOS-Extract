@@ -131,8 +131,11 @@
                 NSLog(@"============================ \n finished %@", path);
                 callback(1, YES);
             }
+        } else {
+            if (callback) {
+                callback((CGFloat)idx/(count - 1), NO);
+            }
         }
-        
     }];
     
     return 0;

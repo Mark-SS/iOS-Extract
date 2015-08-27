@@ -114,6 +114,8 @@
         }
     }
     
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
     [ExportAppImage exportPath:inputPath
                     outputPath:outputPath
                          group:group
@@ -121,13 +123,18 @@
                      exportPNG:exportPNG
                      exportCAR:exportCAR
                       callback:^(CGFloat percent, BOOL isStop) {
-                          if (isStop) {
-                              _textField.stringValue = @"Finished";
-                              [[NSFileManager defaultManager] removeItemAtPath:_temDir error:nil];
-                              NSArray *fileURLs = [NSArray arrayWithObjects:[[NSURL alloc] initFileURLWithPath:outputPath], nil];
-                              [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:fileURLs];
-                          }
+                          dispatch_async(dispatch_get_main_queue(), ^{
+                              _textField.stringValue = [[NSString alloc] initWithFormat:@"Processing %.0f%%", percent * 100];
+                              if (isStop) {
+                                  _textField.stringValue = @"Finished";
+                                  [[NSFileManager defaultManager] removeItemAtPath:_temDir error:nil];
+                                  NSArray *fileURLs = [NSArray arrayWithObjects:[[NSURL alloc] initFileURLWithPath:outputPath], nil];
+                                  [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:fileURLs];
+                              }
+                          });
+                         
                       }];
+    });
 }
 
 #pragma mark zipArchiveDelegate
