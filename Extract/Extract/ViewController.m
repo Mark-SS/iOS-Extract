@@ -12,6 +12,8 @@
 @interface ViewController ()
 
 @property (strong, nonatomic) NSString *temDir;
+@property (weak) IBOutlet NSTextField *textField;
+
 
 @end
 
@@ -83,6 +85,7 @@
         return ;
     }
     
+    _textField.stringValue = @"Processing ...";
     BOOL group = YES;
     if ([[NSUserDefaults standardUserDefaults] valueForKey:@"g"]) {
         group = YES;
@@ -119,7 +122,10 @@
                      exportCAR:exportCAR
                       callback:^(CGFloat percent, BOOL isStop) {
                           if (isStop) {
+                              _textField.stringValue = @"Finished";
                               [[NSFileManager defaultManager] removeItemAtPath:_temDir error:nil];
+                              NSArray *fileURLs = [NSArray arrayWithObjects:[[NSURL alloc] initFileURLWithPath:outputPath], nil];
+                              [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:fileURLs];
                           }
                       }];
 }
