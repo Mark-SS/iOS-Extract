@@ -109,41 +109,21 @@ void CGImageWriteToFile(CGImageRef image, NSString *path)
     
     for (NSString *key in [storage allRenditionNames])
     {
-        //NSLog(@" Writing Image: %@", key);
-        //NSLog(@"images = %@", [catalog imagesWithName:key]);
-        for (CUINamedImage *nameImage in [catalog imagesWithName:key]) {
-            CGImageRef iphone1X = NULL;
-            CGImageRef iphone2X = NULL;
-            CGImageRef iphone3X = NULL;
-            NSUInteger width = nameImage.size.x1 * nameImage.scale;
-            NSUInteger height = nameImage.size.x2 * nameImage.scale;
-            if (nameImage.scale == 1) {
-                iphone1X = [nameImage image];
-                if ([nameImage idiom] == kCoreThemeIdiomPhone) {
-                    CGImageWriteToFile(iphone1X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@~%lu*%lu.png", key, width, height]]);
-                } else if ([nameImage idiom] == kCoreThemeIdiomPad) {
-                    CGImageWriteToFile(iphone1X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@~iPad.png", key]]);
-                } else {
-                    CGImageWriteToFile(iphone1X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", key]]);
-                }
-            } else if (nameImage.scale == 2) {
-                iphone2X = [nameImage image];
-                if ([nameImage idiom] == kCoreThemeIdiomPhone) {
-                    CGImageWriteToFile(iphone2X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@@2x~%lu*%lu.png", key, width, height]]);
-                } else if ([nameImage idiom] == kCoreThemeIdiomPad) {
-                    CGImageWriteToFile(iphone2X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@@2x~iPad.png", key]]);
-                } else {
-                    CGImageWriteToFile(iphone2X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@@2x.png", key]]);
-                }
-            } else if (nameImage.scale == 3) {
-                iphone3X = [nameImage image];
-                if ([nameImage idiom] == kCoreThemeIdiomPhone) {
-                    CGImageWriteToFile(iphone3X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@@3x~%lu*%lu.png", key, width, height]]);
-                } else if ([nameImage idiom] == kCoreThemeIdiomPad) {
-                    CGImageWriteToFile(iphone3X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@@3x~iPad.png", key]]);
-                } else {
-                    CGImageWriteToFile(iphone3X, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@@3x.png", key]]);
-                }
+        NSLog(@" Writing Image: %@", key);        
+        for (int i = 1; i <= 3; i++) {
+            CUINamedImage *phoneNameImage = [catalog imageWithName:key scaleFactor:i deviceIdiom:kCoreThemeIdiomPhone];
+            CUINamedImage *padNameImage = [catalog imageWithName:key scaleFactor:i deviceIdiom:kCoreThemeIdiomPad];
+            CUINamedImage *ohterNameImage = [catalog imageWithName:key scaleFactor:i];
+            if (phoneNameImage) {
+                NSUInteger width = phoneNameImage.size.x1 * phoneNameImage.scale;
+                NSUInteger height = phoneNameImage.size.x2 * phoneNameImage.scale;
+                CGImageWriteToFile(phoneNameImage.image, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@~%lu*%lu.png", key, width, height]]);
+            }
+            if (padNameImage) {
+                CGImageWriteToFile(padNameImage.image, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@~iPad.png", key]]);
+            }
+            if (ohterNameImage) {
+                CGImageWriteToFile(ohterNameImage.image, [outputDirectoryPath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.png", key]]);
             }
         }
     }
